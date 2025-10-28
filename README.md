@@ -1,6 +1,3 @@
-````markdown
-# WSO2 Usage Data Collector
-
 # WSO2 Usage Data Collector
 
 [![Build Status](https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fwso2.org%2Fjenkins%2Fview%2Fproducts%2Fjob%2Fproducts%2Fjob%2Fproduct-apim%2F)](<To be added>)
@@ -10,7 +7,7 @@
 
 ---
 
-## Overview
+# Overview
 
 This repository contains the **WSO2 Usage Data Collector** - a component of the Consumption Tracker system designed to effectively track and record product consumption data within the **WSO2 Micro Integrator (MI)** environment.
 
@@ -22,26 +19,16 @@ Without an existing mechanism to **record or track consumption** (cores, transac
 
 The **Usage Data Collector** addresses this challenge by providing a **system to record product consumption data** and **generate usage reports** when required.
 
-### Objective
-
-Implement a **Consumption Tracker** within the **Micro Integrator (MI)** environment to effectively track and publish usage data, enabling:
-
-- **Visibility**: Monitor actual consumption against allocated limits
-- **Accountability**: Track usage based on real data, not customer reports
-- **Reporting**: Generate accurate usage reports on demand
-- **Compliance**: Ensure customers stay within their licensing agreements
 
 ---
 
-## Architecture
-
-### Overall Architecture
+### Architecture
 
 The consumption tracking system consists of three main components deployed across MI nodes:
 
-<img width="3556" height="2800" alt="Overall Architecture" src="https://github.com/user-attachments/assets/5164f940-42cb-474c-accc-9327d45e3011" />
+<img width="800" alt="Overall Architecture" src="./docs/counter_highlevel_arch.png" />
 
-### 1. MI-Side Components
+## MI-Side Components
 
 The system introduces three main components on the MI side:
 
@@ -49,22 +36,19 @@ The system introduces three main components on the MI side:
 - **Data Publisher** - Publishes collected data to configured destinations
 - **Data Receiver** - Receives and secures data before forwarding to endpoints
 
-### 2. Licensing & Configuration
 
-- Users receive a **license file** from the ServiceNow dashboard containing a **public key** specific to that customer
-- This public key is later used by the Data Publisher to communicate with the public API
-- The license file is imported into MI via configuration
+### Data Collector
 
----
+The **Usage Data Collector** is the component housed in this repository. 
 
-## Data Collector
+The broader Consumption Tracker system includes two types of data collectors:
 
-The **Usage Data Collector** is the component housed in this repository. It includes two primary subcomponents:
+| Subcomponent | Description | Frequency / Trigger | Status |
+|--------------|-------------|---------------------|--------|
+| **Deployment Data Collector** | Collects environment-level data such as CPU core count, JDK version, OS, and update level | Daily / On restart | Separate component (not in this repo) |
+| **Usage Data Collector** | Captures the number of transactions per hour processed by MI nodes and measures the total runtime of automation tasks executed | Hourly | **This repository** |
 
-| Subcomponent | Description | Frequency / Trigger |
-|--------------|-------------|---------------------|
-| **Deployment Data Collector** | Collects environment-level data such as CPU core count, JDK version, OS, and update level | Daily / On restart |
-| **Usage Data Collector** | Captures the number of transactions per hour processed by MI nodes and measures the total runtime of automation tasks executed | Hourly |
+> **Note**: This repository contains only the **Usage Data Collector** component. The Deployment Data Collector is a separate component designed for reuse across multiple WSO2 products.
 
 ### How It Works
 
@@ -74,14 +58,12 @@ The **Usage Data Collector** is the component housed in this repository. It incl
 
 ---
 
-## Data Publisher
+### Data Publisher
 
 The **Data Publisher** component:
 
 - Receives aggregated data from the collectors
-- Publishes data based on the configured destination:
-  - **Choreo-hosted WSO2 API** (for cloud-based monitoring)
-  - **Integration Control Plane (ICP)** (for customers preferring on-premise storage)
+
 
 ### Data Access Options
 
@@ -90,17 +72,25 @@ The **Data Publisher** component:
 
 ---
 
-## Features
+### Data Receiver
+The **Data Receiver** component:
 
-- **Automated Tracking**: Continuously monitors transaction volumes and runtime metrics
-- **Deployment Visibility**: Captures environment configuration data (cores, OS, JDK version, etc.)
-- **Flexible Publishing**: Supports both cloud-based and on-premise data storage
-- **Hourly Usage Reports**: Captures transaction counts per hour for accurate billing
-- **Automation Runtime Tracking**: Measures total runtime of automation tasks
-- **Scalable Architecture**: Designed for distributed MI deployments
-- **Secure Communication**: Uses customer-specific public keys for API authentication
+- Secures incoming data from MI nodes
+- Forwards data to designated endpoints for processing and storage
+- Publishes data based on the available destination:
+  - **Choreo-hosted WSO2 API** (for cloud-based monitoring) [Priority]
+  - **Integration Control Plane (ICP)** (for customers preferring on-premise storage)
 
----
+## Installation
+
+1. Copy the generated JAR to your MI installation:
+   ```bash
+   cp counter/target/org.wso2.carbon.usage.data.collector-1.2.0.jar <MI_HOME>/lib/
+   ```
+
+2. Update the `deployment.toml` configuration as shown above
+
+3. Restart the MI server
 
 ## Configuration
 
@@ -188,17 +178,6 @@ mvn clean install
 # counter/target/org.wso2.carbon.usage.data.collector-1.2.0.jar
 ```
 
-### Installation
-
-1. Copy the generated JAR to your MI installation:
-   ```bash
-   cp counter/target/org.wso2.carbon.usage.data.collector-1.2.0.jar <MI_HOME>/lib/
-   ```
-
-2. Update the `deployment.toml` configuration as shown above
-
-3. Restart the MI server
-
 ---
 
 ## Project Structure
@@ -209,10 +188,7 @@ integration-transaction-counter/
 │   ├── src/main/java/
 │   │   └── org/wso2/integration/transaction/counter/
 │   │       ├── config/               # Configuration management
-│   │       ├── consumer/             # Data consumption logic
-│   │       ├── producer/             # Data production logic
 │   │       ├── publisher/            # Data publishing logic
-│   │       ├── queue/                # Queue management
 │   │       ├── record/               # Record data structures
 │   │       └── store/                # Storage implementations
 │   └── pom.xml
@@ -223,86 +199,12 @@ integration-transaction-counter/
 
 ---
 
-## Use Cases
-
-### 1. License Compliance Monitoring
-Track whether customers are consuming resources within their licensed limits (cores, transactions, runtime).
-
-### 2. Usage-Based Billing
-Generate accurate bills based on actual transaction volumes and automation runtime rather than estimates.
-
-### 3. Capacity Planning
-Analyze consumption patterns to forecast infrastructure needs and plan upgrades.
-
-### 4. Customer Analytics
-Understand how customers use MI products to improve offerings and support.
-
-### 5. Audit & Reporting
-Provide detailed consumption reports for internal audits and customer inquiries.
-
----
-
 ## Data Collected
-
-### Deployment Data (Daily / On Restart)
-
-- CPU core count
-- JDK version
-- Operating system information
-- MI update level
-- Node identifier
-- Deployment timestamp
 
 ### Usage Data (Hourly)
 
 - Transaction count per hour
 - Automation task runtime duration
-- Peak transaction periods
-- Node-level metrics
-- Timestamp and duration information
-
----
-
-## Extensibility
-
-### Custom Storage Implementations
-
-You can implement custom storage backends by:
-
-1. Implementing the `org.wso2.integration.transaction.counter.store.TransactionRecordStore` interface
-2. Configuring your implementation class in `store_impl`
-
-**Example use cases:**
-- Send data to message queues (Kafka, RabbitMQ)
-- Store in alternative databases (MongoDB, PostgreSQL)
-- Integrate with custom analytics platforms
-- Forward to SIEM systems
-
----
-
-## Deployment Recommendations
-
-### Production Deployment
-
-1. **Node Configuration**
-   - Set unique `server_id` for each MI node
-   - Adjust thread pool sizes based on expected load
-   - Monitor queue sizes to prevent data loss
-
-2. **Network Configuration**
-   - Ensure reliable connectivity to data receiver endpoints
-   - Configure appropriate timeouts and retries
-   - Use HTTPS for secure data transmission
-
-3. **Monitoring**
-   - Monitor collector performance metrics
-   - Set up alerts for queue overflow conditions
-   - Track publisher success/failure rates
-
-4. **Security**
-   - Protect license files and public keys
-   - Use secure credentials for API authentication
-   - Enable encryption for data in transit
 
 ---
 
@@ -316,27 +218,6 @@ The Usage Data Collector is designed for reuse across multiple WSO2 products:
 - **WSO2 Identity & Access Management (IAM)** - Planned for access management metrics
 
 The modular architecture allows teams to adapt the collector to product-specific requirements while maintaining core functionality.
-
----
-
-## Troubleshooting
-
-### Common Issues
-
-**Issue**: Collector not recording data
-- Verify `enable = true` in configuration
-- Check MI logs for initialization errors
-- Ensure license file is properly configured
-
-**Issue**: Data not being published
-- Verify `service_url` is accessible
-- Check authentication credentials
-- Review `publisher_max_retries` and network connectivity
-
-**Issue**: High memory usage
-- Reduce `record_queue_size`
-- Increase `publisher_scheduled_interval`
-- Lower `max_transaction_count_per_record`
 
 ---
 
@@ -386,7 +267,4 @@ This project is licensed under the [Apache 2.0 License](http://www.apache.org/li
 
 ---
 
-(c) 2024-2025, [WSO2 LLC](http://www.wso2.org/). All Rights Reserved.
-````
-
-
+(c) 2025, [WSO2 LLC](http://www.wso2.org/). All Rights Reserved.
