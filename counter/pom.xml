@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-# Copyright (c) 2023, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+# Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,15 +19,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.wso2.carbon.usage.data.collector</groupId>
-    <version>1.2.0</version>
+    <groupId>org.wso2.micro.integrator.usage.data.collector</groupId>
+    <version>0.1.0</version>
     <artifactId>usage-data-collector</artifactId>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <groupId>org.wso2.carbon.usage.data.collector</groupId>
-  <version>1.2.0</version>
-  <artifactId>org.wso2.carbon.usage.data.collector</artifactId>
+  <groupId>org.wso2.micro.integrator.usage.data.collector</groupId>
+  <version>0.1.0</version>
+  <artifactId>org.wso2.micro.integrator.usage.data.collector</artifactId>
   <packaging>bundle</packaging>
   <name>WSO2 Usage Data Collector</name>
 
@@ -116,8 +116,7 @@
             <Bundle-Name>${project.artifactId}</Bundle-Name>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>
-              org.wso2.integration.transaction.counter.*,
-              org.wso2.carbon.usage.data.collector.*,
+              org.wso2.micro.integrator.usage.data.collector.*,
             </Export-Package>
             <Import-Package>
               org.apache.synapse.core, *;resolution:=optional

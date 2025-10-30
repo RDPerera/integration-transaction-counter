@@ -85,7 +85,7 @@ The **Data Receiver** component:
 
 1. Copy the generated JAR to your MI installation:
    ```bash
-   cp counter/target/org.wso2.carbon.usage.data.collector-1.2.0.jar <MI_HOME>/lib/
+   cp counter/target/org.wso2.micro.integrator.usage.data.collector-0.1.0.jar <MI_HOME>/lib/
    ```
 
 2. Update the `deployment.toml` configuration as shown above
@@ -149,10 +149,11 @@ service_password = "admin"
 
 | Parameter | Description |
 |-----------|-------------|
-| `store_impl` | Implementation class for record storage |
 | `service_url` | URL of the data receiving endpoint |
 | `service_username` | Authentication username |
 | `service_password` | Authentication password |
+
+> **Note**: The handler class is automatically registered at `org.wso2.micro.integrator.usage.data.collector.TransactionCountHandler`
 
 ---
 
@@ -175,7 +176,7 @@ cd integration-transaction-counter
 mvn clean install
 
 # The JAR will be created at:
-# counter/target/org.wso2.carbon.usage.data.collector-1.2.0.jar
+# counter/target/org.wso2.micro.integrator.usage.data.collector-0.1.0.jar
 ```
 
 ---
@@ -186,11 +187,11 @@ mvn clean install
 integration-transaction-counter/
 ├── counter/                          # Usage Data Collector source code
 │   ├── src/main/java/
-│   │   └── org/wso2/integration/transaction/counter/
+│   │   └── org/wso2/micro/integrator/usage/data/collector/
 │   │       ├── config/               # Configuration management
 │   │       ├── publisher/            # Data publishing logic
 │   │       ├── record/               # Record data structures
-│   │       └── store/                # Storage implementations
+│   │       └── exception/            # Exception classes
 │   └── pom.xml
 ├── docs/                             # Documentation and diagrams
 ├── pom.xml                           # Parent POM
